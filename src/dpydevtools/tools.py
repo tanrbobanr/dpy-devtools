@@ -215,6 +215,7 @@ class DevTools:
                  tracker_defaults: dict[str, Tracker] = None,
                  files_path: str = None,
                  requirements_path: str = None,
+                 attach_to: object = None,
                  log_level: int | str = logging.INFO) -> None:
         """Arguments
         ---------
@@ -239,9 +240,20 @@ class DevTools:
             Control blacklist defaults.
         tracker_defaults : dict of str and Tracker, optional, default=None
             Command tracker defaults.
+        files_path : str, default=None
+            The directory that is available to `<prog > f | files`.
+        requirements_path : str, default=None
+            The path to a `requirements.txt` file, used by `<prog> --update-requirements`.
+        attach_to : object, default=None
+            If defined, assigns this instance to the given object under the name
+            `__dpy_devtools__`. This can be later acquired with `getattr`, `.__dpy_devtools__`, or
+            `DevTools.get`.
+        log_level : int or str, default=INFO
+            The logging level.
 
         """
-        setattr(controller, "__dpy_devtools__", self)
+        if attach_to:
+            setattr(attach_to, "__dpy_devtools__", self)
         utils.setup_logging(_logger, log_level)
         self._start_ts = time.time()
         self._prog = prog
