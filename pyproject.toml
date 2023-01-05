@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dpy-devtools"
+version = "0.0.1"
+authors = [
+    { name = "Tanner B. Corcoran", email = "tannerbcorcoran@gmail.com" },
+]
+description = "A set of useful administrator and developer tools for discord.py"
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "discord.py >= 2.0.0"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/tanrbobanr/dpy-devtools"
