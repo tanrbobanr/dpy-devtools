@@ -459,7 +459,7 @@ class DevTools:
         await ctx.send(embed=utils.make_message._pos("Updating requirements..."))
         vers = sys.version_info
         args = ("py", f"-{vers.major}.{vers.minor}", "-m", "pip", "install", "-U", "-r",
-                self._requirements_path)
+                str(self._requirements_path))
         process = subprocess.Popen(args, stdout=subprocess.PIPE)
         output = process.communicate()[0]
         if not output:
