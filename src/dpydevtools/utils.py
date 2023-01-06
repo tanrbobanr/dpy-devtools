@@ -10,7 +10,9 @@ __copyright__ = "Copyright (c) 2022-present Tanner B. Corcoran"
 
 from discord.ext import commands
 from . import constants
+import pathlib
 import logging
+import pkgutil
 import discord
 import typing
 import sys
@@ -53,20 +55,10 @@ def _ensure_chars_allowed(__str: str) -> None:
                          "alphanumericals and underscores")
 
 
-def _get_extensions(path: str, filenames_only: bool = False
-                    ) -> tuple[int | None, list[str]]:
-    num_extensions: int = None
-    paths: list[str] = []
-    converted_path = path.replace("\\", ".")
-    for _, _, files in os.walk(path):
-        num_extensions = len(files)
-        if filenames_only:
-            paths = [f.replace('.py', '', 1) for f in files]
-        else:
-            paths = [f"{converted_path}.{f.replace('.py', '', 1)}" for f in
-                     files]
-        break
-    return num_extensions, paths
+def _get_extensions(path: pathlib.Path, include_prefix: bool = True) -> list[str]:
+    if include_prefix:
+        return [m.name for m in pkgutil.iter_modules([str(path)], f"{'.'.join(path.parts)}.")]
+    return [m.name for m in pkgutil.iter_modules([str(path)])]
 
 
 class make_message:

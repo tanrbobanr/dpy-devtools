@@ -263,9 +263,9 @@ class DevTools:
         self._control_whitelists = UserGroups(cw_defaults)
         self._control_blacklists = UserGroups(cb_defaults)
         self._trackers = TrackerGroups(tracker_defaults)
-        self._extensions_path = extensions_path
-        self._files_path = files_path
-        self._requirements_path = requirements_path
+        self._extensions_path = extensions_path and pathlib.Path(extensions_path)
+        self._files_path = files_path and pathlib.Path(files_path)
+        self._requirements_path = requirements_path and pathlib.Path(requirements_path)
     
     def _check(self, __cg: str, __cw: str, __cb: str, __userid: int) -> bool:
         _logger.debug("beginning check -> cg=%s cw=%s cb=%s userid=%s", __cg,
@@ -640,8 +640,7 @@ class DevTools:
         if not self._extensions_path:
             parser_.error("this instance is not set up for extension "
                            "manipulation")
-        num_extensions, paths = utils._get_extensions(self._extensions_path,
-                                                      True)
+        paths = utils._get_extensions(self._extensions_path, False)
         embed = utils.make_message._def(", ".join(paths) or "NONE")
         await ctx.send(embed=embed)
 
@@ -668,7 +667,7 @@ class DevTools:
             parser_.error("individual extension reloading is not possible "
                            "without 'extensions_path' being set in the "
                            "'AdminTools' instance")
-        ext_pkg = self._extensions_path.replace("\\", ".")
+        ext_pkg = ".".join(self._extensions_path.parts)
         ext_path = f"{ext_pkg}.{__name}"
         if ext_path not in self._controller.extensions:
             parser_.error(f"the extension '{ext_path}' is not currently loaded"
@@ -704,7 +703,7 @@ class DevTools:
             parser_.error("individual extension unloading is not possible "
                            "without 'extensions_path' being set in the "
                            "'AdminTools' instance")
-        ext_pkg = self._extensions_path.replace("\\", ".")
+        ext_pkg = ".".join(self._extensions_path.parts)
         ext_path = f"{ext_pkg}.{__name}"
         if ext_path not in self._controller.extensions:
             parser_.error(f"the extension '{ext_path}' is not currently loaded"
@@ -723,7 +722,8 @@ class DevTools:
             parser_.error("extension loading is not possible without "
                            "'extensions_path' being set in the 'AdminTools' "
                            "instance")
-        num_extensions, paths = utils._get_extensions(self._extensions_path)
+        paths = utils._get_extensions(self._extensions_path)
+        num_extensions = len(paths)
         if not num_extensions:
             parser_.error("no extensions were found")
         num_succeeded = 0
@@ -743,16 +743,15 @@ class DevTools:
             parser_.error("individual extension loading is not possible "
                            "without 'extensions_path' being set in the "
                            "'AdminTools' instance")
-        num_extensions, paths = utils._get_extensions(self._extensions_path)
-        ext_pkg = self._extensions_path.replace("\\", ".")
+        paths = utils._get_extensions(self._extensions_path)
+        ext_pkg = ".".join(self._extensions_path.parts)
         ext_path = f"{ext_pkg}.{__name}"
         if ext_path not in paths:
             parser_.error(f"the extension '{ext_path}' does not exist")
         try:
             await self._controller.load_extension(ext_path)
         except Exception as exc:
-            parser_.error("an error occurred in the extension loading "
-                           f"process: {exc}")
+            parser_.error(f"an error occurred in the extension loading process: {exc}")
         embed = utils.make_message._pos(f"extension '{ext_path}' has been loaded")
         await ctx.send(embed=embed)
 
